@@ -13,7 +13,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css'} // 新增全局字体样式
+      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css' } // 新增全局字体样式
     ]
   },
   /*
@@ -33,7 +33,8 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     { src: '@/plugins/localStorage', ssr: false },
-    "@/plugins/axios"
+    "@/plugins/axios",
+    { src: '~/plugins/vue-editor.js', mode: 'client' }
   ],
   /*
   ** Nuxt.js dev-modules
