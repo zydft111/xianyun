@@ -1,10 +1,15 @@
 <template>
-  <div>酒店首页</div>
+  <div> 
+     <Map />
+  </div>
 </template>
 
 <script>
+import Map from '@/components/hotel/map'
 export default {
-
+   components:{
+     Map
+   }
 }
 </script>
 
