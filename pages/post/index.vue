@@ -1,5 +1,7 @@
 <template>
-  <div class="main">
+  <div class="main clearfix">
+
+      <div class="leftside">
         <div class="tab" @mouseleave="handleOver">
               <div class="left">
                      <el-row type='flex' class="item" justify='space-between' align='middle'
@@ -22,17 +24,25 @@
                 <img src="@/static/pic_sea.jpg"  alt="">
             </Nuxt-link>        
         </div>
-    <div class="header">
-        <el-row type='flex'>
-            <!-- <input type="text" placeholder="请输入想去的地方，比如：'广州'">
+     </div>
+
+   <div class="rightside">
+       <div class="header">
+        <el-row type='flex' class="searchtab">
+            <!-- <input type="text" placeholder="请输入想去的地方，比如：'广州'" v-model="city">
             <i class="el-icon-search"></i> -->
-            <el-input placeholder="请输入想去的地方，比如：'广州'" v-model="city"
-            suffix-icon="el-icon-search"></el-input>
+            <!-- <el-input placeholder="请输入想去的地方，比如：'广州'" v-model="city"
+            suffix-icon="el-icon-search"></el-input> -->
+            <el-input placeholder="请输入想去的地方，比如：'广州'"  v-model="city">    
+            <i slot="suffix" class="el-input__icon el-icon-search" @click='getpostlist(city)'></i>
+            </el-input>
         </el-row>
         <el-row class="city">
             <span>推荐:&nbsp;&nbsp;
-            <nuxt-link v-for="(city,index) in ['广州','上海','北京']"
-             :key="index" :to="`/post/${city}`">{{city}}&nbsp;&nbsp;</nuxt-link>
+            <!-- <nuxt-link v-for="(city,index) in ['广州','上海','北京']"
+             :key="index" :to="`/post/${city}`">{{city}}&nbsp;&nbsp;</nuxt-link> -->
+             <a href="Javascript:;" :key="index" @click="getpostlist(city)"
+             v-for="(city,index) in ['广州','上海','北京']">{{city}}&nbsp;&nbsp;</a>
         </span>
         </el-row>
         <el-row type='flex' justify='space-between' class="title">
@@ -40,10 +50,23 @@
             <el-button type='primary'><i class="el-icon-edit"></i>写游记</el-button>
         </el-row>      
         <hr>
+       </div>
+       <div class="post">
+         <Postlist v-for="(data,index) in articlelist" 
+         :key="index" :item='data'></Postlist>
+       </div>
+
+           <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[3, 5, 10, 15]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </div>
-    <div class="post">
-         <Postlist></Postlist>
-    </div>
+
   </div>
 </template>
 
@@ -55,6 +78,11 @@ export default {
     },
     data () {
         return {
+            // articlelist:[],
+            total:0,
+            pageSize:3,
+            currentPage:1,
+            datalist:[],
             city:'',
             current:false,
             navs:[
@@ -148,7 +176,38 @@ export default {
         },
         handleOver(){
             this.current=false;
-        }
+        },
+         handleSizeChange(val) {
+          console.log(`每页 ${val} 条`);
+          this.pageSize=val;
+          this.currentPage=1;
+      },
+       handleCurrentChange(val) {
+           console.log(`当前页: ${val}`);
+           this.currentPage=val;
+           this.$router.replace({
+               url:this.$route.path,
+               query:{
+                   start:this.pageSize*(this.currentPage-1),
+                   limit:this.pageSize
+               }
+           })
+      },
+
+
+      getpostlist(city){
+          this.$axios({
+            url:'/posts',
+            params:{
+                city:city,
+                _start:this.pageSize*(this.currentPage-1),
+                _limit:this.pageSize}
+        }).then(res=>{
+            console.log(res);
+            this.datalist= res.data.data;
+            this.total= res.data.total
+        })
+      }
     },
 
     mounted () {
@@ -159,14 +218,16 @@ export default {
             this.navs=res.data.data;
         })
 
+       this.getpostlist();
+        
+    },
 
-        this.$axios({
-            url:'/posts',
-            city:this.city
-        }).then(res=>{
-            console.log(res);
-            
-        })
+    
+    computed: {
+        articlelist(){
+              const arr=this.datalist.slice(this.pageSize*(this.currentPage-1),this.pageSize*this.currentPage)
+              return arr;
+        }
     }
 
 }
@@ -177,8 +238,16 @@ export default {
     margin:0 auto;
     width:1200px;
     position: relative;
-    
+    // height: 2000px;
+    // display:flex;
 }
+.leftside{
+    float:left;
+}
+.rightside{
+    float:right;
+}
+
 .tab{
     margin-top: 30px;
     position:relative;
@@ -210,7 +279,7 @@ export default {
     border:1px #ccc solid;
     position:absolute;  
     top: 0;
-    left:300px;
+    left:299px;
     background-color: #ccc;
 
     /* li {
@@ -236,15 +305,16 @@ export default {
         }
 
   .header{
-      position:absolute;
-      top:0;
-      left:400px;  
+    //   position:absolute;
+    //   top:30px;
+    //   left:400px;  
       width:800px;
+      margin-top: 30px;
       
   }
   
 
-//   .header input{
+//   .searchtab input{
 //       display: flex;
 //       flex:1;
 //       height:50px;
@@ -255,6 +325,7 @@ export default {
     height:50px;
     border:2px solid orange;
 }
+
 
   .city{
       margin-top: 10px;
@@ -267,8 +338,9 @@ export default {
       }
   }
   .post{
-       position: absolute;
-       top:200px;
-       left:400px;
+    //    position: absolute;
+    //    top:200px;
+    //    left:400px;
+       width:800px;
   }
 </style>
