@@ -32,7 +32,8 @@
           </el-form-item>
         </el-form>
         <!-- 提交与保存为草稿 -->
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary"
+                   @click="handleSubmit">提交</el-button>
         <span>
           或者
           <el-link type="warning">警告链接</el-link>
@@ -58,6 +59,29 @@ export default {
       },
       customToolbar: [],
       editorSettings: {}
+    }
+  },
+
+  methods: {
+    handleSubmit () {
+      if (this.form.title && this.form.content && this.form.city) {
+        this.$axios({
+          url: '/posts',
+          method: 'POST',
+          data: this.form,
+          headers: { Authorization: `Bearer ` + this.$store.state.user.userInfo.token }
+        }).then(res => {
+          console.log(res.data)
+        })
+        console.dir(JSON.parse(localStorage.getItem('store')))
+      } else if (!this.form.title) {
+        this.$message.error('请输入标题')
+      } else if (!this.form.content) {
+        this.$message.error('请输入文章内容')
+      } else if (!this.form.city) {
+        this.$message.error('请输入你要发布的城市')
+      }
+
     }
   }
 }
