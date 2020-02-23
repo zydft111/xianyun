@@ -7,13 +7,15 @@
                      <el-row type='flex' class="item" justify='space-between' align='middle'
                      v-for="(item,index) in navs" :key="index">
                          <span @mouseenter="handleEnter(index)" :class="{active:current===index}">
-                             {{item.type}}<i class="el-icon-arrow-right"></i></span>
+                             {{item.type}}</span><i class="el-icon-arrow-right"></i>
                      </el-row>
               </div>
               <div class="right" v-if="current!==false">
                   <ul>
                       <li v-for="(item,index) in navs[current].children" :key="index">
-         {{index+1}}&nbsp;&nbsp;<Nuxt-link to='#'>{{item.city}}&nbsp;&nbsp;{{item.desc}}</Nuxt-link>
+         {{index+1}}&nbsp;&nbsp;
+         <!-- <Nuxt-link to='#'>{{item.city}}&nbsp;&nbsp;{{item.desc}}</Nuxt-link> -->
+         <a href="Javascript:;" @click="getpostlist(item.city)">{{item.city}}&nbsp;&nbsp;{{item.desc}}</a>
                       </li>
                   </ul>
               </div>
@@ -52,7 +54,7 @@
         <hr>
        </div>
        <div class="post">
-         <Postlist v-for="(data,index) in articlelist" 
+         <Postlist v-for="(data,index) in datalist" 
          :key="index" :item='data'></Postlist>
        </div>
 
@@ -181,32 +183,80 @@ export default {
           console.log(`每页 ${val} 条`);
           this.pageSize=val;
           this.currentPage=1;
+        //   this.$router.replace({
+        //       url:this.$route.path,
+        //       query:{
+        //           start:this.pageSize*(this.currentPage-1),
+        //           limit:this.pageSize
+        //       }
+        //   })
+          this.getpostlist(this.city);
       },
        handleCurrentChange(val) {
-           console.log(`当前页: ${val}`);
-           this.currentPage=val;
-           this.$router.replace({
-               url:this.$route.path,
-               query:{
-                   start:this.pageSize*(this.currentPage-1),
-                   limit:this.pageSize
-               }
-           })
+        //    console.log(`当前页: ${val}`);
+        //    this.currentPage=val;
+           this.getpostlist(this.city,val);
+        //    this.$router.replace({
+        //        url:this.$route.path,
+        //        query:{
+        //            city:this.city,
+        //            start:this.pageSize*(this.currentPage-1),
+        //            limit:this.pageSize
+        //        }
+        //    });
+              
+        //    this.articlelist=this.datalist.slice(this.pageSize*(this.currentPage-1),this.pageSize*this.currentPage)
+            // let start=this.pageSize*(this.currentPage-1);
+            // let limit=this.pageSize;
+            //  this.articlelist=this.datalist.slice
+            //     (start,limit)
       },
 
 
-      getpostlist(city){
-          this.$axios({
+      getpostlist(city,val){
+          console.log(city);         
+          this.city=city;
+          if(val){
+              this.currentPage=val;
+          }else{
+              this.currentPage=1;
+          }
+          
+          if(city){
+                this.$axios({
             url:'/posts',
             params:{
                 city:city,
                 _start:this.pageSize*(this.currentPage-1),
                 _limit:this.pageSize}
-        }).then(res=>{
+        }) .then(res=>{
             console.log(res);
             this.datalist= res.data.data;
-            this.total= res.data.total
+            console.log(this.datalist);         
+            this.total= res.data.total;
+            this.$router.replace({
+               url:this.$route.path,
+               query:{
+                   city:this.city,
+                   start:this.pageSize*(this.currentPage-1),
+                   limit:this.pageSize
+               }
+
+           });
+           
+        }) } else {
+             this.$axios({
+            url:'/posts',
+            params:{               
+                _start:this.pageSize*(this.currentPage-1),
+                _limit:this.pageSize}
+           }) .then(res=>{
+            console.log(res);
+            this.datalist= res.data.data;
+            this.total= res.data.total;
         })
+        }       
+         
       }
     },
 
@@ -223,12 +273,20 @@ export default {
     },
 
     
-    computed: {
-        articlelist(){
-              const arr=this.datalist.slice(this.pageSize*(this.currentPage-1),this.pageSize*this.currentPage)
-              return arr;
-        }
-    }
+    // computed: {
+    //     articlelist(){
+    //         let start=this.pageSize*(this.currentPage-1);
+    //         let limit=this.pageSize;
+    //           const arr=this.datalist.slice
+    //             (start,limit)
+                 
+                  
+    // //             //    {start:this.pageSize*(this.currentPage-1)},
+    // //             //    {limit:this.pageSize}
+    // //         //   (this.pageSize*(this.currentPage-1),this.pageSize*this.currentPage)
+    //           return arr;
+    //     }
+    // }
 
 }
 </script>
@@ -264,6 +322,9 @@ export default {
     width:300px;
     height:50px;
     border:1px #ccc solid;
+    span{
+        margin-left: 10px;
+    }
 
     /* span .active{
         padding-left: 20px;
