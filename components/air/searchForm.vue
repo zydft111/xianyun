@@ -13,6 +13,7 @@
         <el-form class="search-form-content" ref="form" label-width="80px">
 
             <el-form-item label="出发城市">
+
                 <!-- fetch-suggestions: 监听输入框的输入，可以在这个事件中请求API数据,类似input事件 -->
                 <!-- select: 点击展开列表选项时候触发 -->
                 <!-- @blur：失去焦点时候触发，默认选中第一个 -->
@@ -29,14 +30,14 @@
             <el-form-item label="到达城市">
                 <!-- fetch-suggestions: 监听输入框的输入，可以在这个事件中请求API数据,类似input事件 -->
                 <!-- select: 点击展开列表选项时候触发 -->
-                <el-autocomplete
-                v-model="form.destCity"
-                :fetch-suggestions="queryDestSearch"
-                placeholder="请搜索到达城市"
-                @select="handleDestSelect"
-                @blur="handleDestBlur"
-                class="el-autocomplete"
-                ></el-autocomplete>
+                    <el-autocomplete
+                    v-model="form.destCity"
+                    :fetch-suggestions="queryDestSearch"
+                    placeholder="请搜索到达城市"
+                    @select="handleDestSelect"
+                    @blur="handleDestBlur"
+                    class="el-autocomplete"
+                    ></el-autocomplete>
             </el-form-item>
 
             <el-form-item label="出发时间">
