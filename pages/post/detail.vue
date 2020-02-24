@@ -3,7 +3,7 @@
     <div class="containers">
       <div class="main">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">旅游攻略</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/post' }">旅游攻略</el-breadcrumb-item>
           <el-breadcrumb-item>攻略详情</el-breadcrumb-item>
         </el-breadcrumb>
         <!-- 文章标题 -->
@@ -12,7 +12,7 @@
         <!-- 发表时间 -->
         <div class="article-time">
           <span>攻略：2019-05-22 10:57</span>
-          <span>阅读：5132</span>
+          <span>阅读：{{articleData.watch}}</span>
         </div>
         <!-- 正文内容 -->
         <div class="article-content" v-html="`${articleData.content}`">
@@ -23,7 +23,7 @@
           <div class="ctrl-fater">
             <div class="ctrl-item">
               <i class="iconfont iconpinglun"></i>
-              <p>评论(0)</p>
+              <p>评论({{commentsList.length}})</p>
             </div>
             <div class="ctrl-item">
               <i class="iconfont iconstar1"></i>
@@ -35,7 +35,7 @@
             </div>
             <div class="ctrl-item">
               <i class="iconfont iconding"></i>
-              <p>点赞(36)</p>
+              <p>点赞(0)</p>
             </div>
           </div>
         </div>
@@ -69,9 +69,17 @@
           </div>
 
           <!-- 评论列表 -->
-          <div class="comment-list">
+          <div class="comment-list" v-for="item in commentsList" :key=item>
             <!-- 评论内容 -->
-            <div>想评论？不存在的！</div>
+            <!-- <div>想评论？不存在的！</div> -->
+            <div class="comment-item">
+              <div class="comment-user">
+                <img src="http://157.122.54.189:9095/assets/images/avatar.jpg" alt />
+                <span>{{item.account.nickname}}</span>
+                <i>2020-02-24 12:27</i>
+              </div>
+              <p>{{item.content}}</p>
+            </div>
           </div>
 
           <!-- 分页 -->
@@ -83,7 +91,7 @@
               :page-sizes="[2, 4, 6, 8]"
               :page-size="100"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="0"
+              :total="commentsList.length"
             ></el-pagination>
           </div>
         </div>
@@ -106,13 +114,16 @@ export default {
     return {
       dialogImageUrl: "",
       dialogVisible: false,
-      
+
       // 把获取到的数据暂存
       articleData: {},
 
-      currentPage4:1,
-      handleSizeChange:1,
-      handleCurrentChange:2
+      // 保存评论数据
+      commentsList: [],
+
+      currentPage4: 1,
+      handleSizeChange: 1,
+      handleCurrentChange: 2
     };
   },
   methods: {
@@ -126,15 +137,28 @@ export default {
   },
 
   mounted() {
+    // console.log(this.$route.query);
     // 获取数据
     this.$axios({
       url: "/posts",
       params: {
-        id: 4
+        id: this.$route.query.id
+      }
+    }).then(res => {
+      console.log(res);
+      this.articleData = res.data.data[0];
+    });
+
+    //获取文章评论
+    this.$axios({
+      url: "/posts/comments",
+      params: {
+        post: this.$route.query.id
       }
     }).then(res => {
       // console.log(res);
-      this.articleData = res.data.data[0];
+      this.commentsList = res.data.data;
+      console.log(this.commentsList);
     });
   }
 };
@@ -151,7 +175,7 @@ export default {
   .main {
     //   float: left;
     flex: 70;
-    // width: 700px;
+    width: 700px;
     padding-top: 10px;
     //   height: 500px;
     //   background-color: blue;
@@ -181,14 +205,17 @@ export default {
         font-size: 16px;
         margin-bottom: 8px;
         // width: 700px;
-        span {
-          // display: block;
-          // width: 700px;
+        // span {
+        // display: block;
+        // width: 700px;
 
-          > img {
-            width: 100%;
-            
-          }
+        // > img {
+        //   width: 100%;
+
+        // }
+        // }
+        img {
+          max-width: 700px !important;
         }
       }
     }
@@ -242,8 +269,27 @@ export default {
         // background-color: aqua;
         border: 1px #998 dashed;
         margin: 10px 0;
-        text-align: center;
-        line-height: 200px;
+        // text-align: center;
+        // line-height: 200px;
+
+        .comment-item {
+          margin: 10px 0 0 10px;
+
+          .comment-user {
+            font-size: 12px;
+            color:#666; 
+
+            img {
+              width: 16px;
+              height: 16px;
+              border-radius: 50%;
+            }
+          }
+
+          p {
+            margin: 10px;
+          }
+        }
       }
 
       // 分页

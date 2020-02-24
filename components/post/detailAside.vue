@@ -1,27 +1,24 @@
 <template>
   <!-- 右侧内容 -->
-  <div class="aside" >
+  <div class="aside">
     <h4>相关攻略</h4>
-    
+
     <!-- 推荐文章列表 -->
-    <div class="recommend-list" >
+    <div class="recommend-list">
       <!-- 1 -->
-      <a href v-for="(item, index) in recommends" :key="index" >
-        <div class="a-centent" >
+      <a href v-for="(item, index) in recommends" :key="index" @click="changeClick(index)">
+        <div class="a-centent">
           <div class="big-img">
-            <img
-              :src="item.images[0]"
-              alt
-            />
+            <img :src="item.images[0]" alt />
           </div>
-          <div >
+          <div>
             <div class="a-title">{{item.title}}</div>
             <span>{{item.updated_at|getData}}</span>
             <span>阅读：{{item.watch}}</span>
           </div>
         </div>
       </a>
-      
+
       <!-- 2 -->
       <!-- <a href>
         <div class="a-centent">
@@ -35,7 +32,7 @@
           </div>
         </div>
       </a>
-      <hr />  -->
+      <hr />-->
       <!-- 3 -->
       <!-- <a href>
         <div class="a-centent">
@@ -49,7 +46,7 @@
           </div>
         </div>
       </a>
-      <hr /> -->
+      <hr />-->
       <!-- 4 -->
       <!-- <a href>
         <div class="a-centent">
@@ -63,7 +60,7 @@
           </div>
         </div>
       </a>
-      <hr /> -->
+      <hr />-->
       <!-- 5 -->
       <!-- <a href>
         <div class="a-centent">
@@ -76,7 +73,7 @@
             <span>阅读 7</span>
           </div>
         </div>
-      </a> -->
+      </a>-->
     </div>
   </div>
 </template>
@@ -108,7 +105,11 @@ export default {
       
     });
   },
-  methods() {}
+  methods:{
+    changeClick(index){
+      console.log(index);
+    }
+  }
 };
 </script>
 
@@ -125,8 +126,8 @@ export default {
     font-weight: 400;
     font-size: 18px;
     margin: 10px 0;
-    padding-bottom: 10px ;
-    border-bottom: 1px solid #D0D0D0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d0d0d0;
   }
 
   .recommend-list {
@@ -136,21 +137,20 @@ export default {
       height: 120px;
       // background-color: brown;
       align-items: center;
-      border-bottom: 1px solid #D0D0D0;
+      border-bottom: 1px solid #d0d0d0;
 
       .a-centent {
         display: flex;
         .big-img {
           width: 100px;
           height: 80px;
-          background-color: #D0D0D0;
+          background-color: #d0d0d0;
           margin-right: 10px;
 
           img {
             width: 100%;
             height: 100%;
           }
-          
         }
 
         .a-title {
